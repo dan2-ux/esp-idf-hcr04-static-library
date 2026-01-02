@@ -2,6 +2,13 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+TimerHandle_t timer1;
+
+void timerFunction(TimerHandle_t xTimer)
+{
+    gpio_set_level(GPIO_NUM_2, 0);
+}
+
 void distanceDisplay(void *arg)
 {
     distance::gpioINFO *gpio = (distance::gpioINFO *)arg;
@@ -16,7 +23,17 @@ void distanceDisplay(void *arg)
         }
         snprintf(distanceText, 20, "Distance: %.2f cm", dis);
         ESP_LOGI(TAG, "%s", distanceText);
-        vTaskDelay(pdMS_TO_TICKS(500));
+        if (dis < 10)
+        {
+            gpio_set_level(GPIO_NUM_2, 1);
+
+            if (xTimerIsTimerActive(timer1) != false)
+            {
+                xTimerStop(timer1, portMAX_DELAY);
+            }
+            xTimerStart(timer1, portMAX_DELAY);
+        }
+        vTaskDelay(pdMS_TO_TICKS(100));
         free(distanceText);
     }
 }
@@ -29,6 +46,11 @@ extern "C" void app_main()
     };
 
     distance::gpioINIT(&gpio);
+
+    gpio_reset_pin(GPIO_NUM_2);
+    gpio_set_direction(GPIO_NUM_2, GPIO_MODE_OUTPUT);
+
+    timer1 = xTimerCreate("turn led on when distance < 10", pdMS_TO_TICKS(1000), pdTRUE, (void *)0, timerFunction);
 
     xTaskCreatePinnedToCore(distanceDisplay, "displaying distance", 2048, &gpio, 5, NULL, 1);
 }
