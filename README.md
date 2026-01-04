@@ -1,6 +1,39 @@
-This is a static library for the HC-SR04 ultrasonic sensor in the ESP-IDF environment.
+# HC-SR04 Ultrasonic Distance Sensor
 
-You only need to declare the GPIO pins to which the TRIG and ECHO are connected, and the library will handle the rest.
+This repository demonstrates how to interface the HC-SR04 ultrasonic distance sensor to measure distance using sound wave reflection.
 
-To use this library, place the folder inside the components directory of your ESP-IDF project.
-Then, make sure the folder name (in this case, hcr04) is included in the CMakeLists.txt file inside your main folder.
+The HC-SR04 is commonly used in obstacle detection, robotics, and distance measurement projects.
+
+<img width="600" height="600" alt="image" src="https://github.com/user-attachments/assets/REPLACE_WITH_IMAGE" />
+## Sensor Overview
+- Measurement Range:	2 cm – 400 cm
+- Accuracy:	±3 mm
+- Operating Voltage:	5 V
+- Interface:	Trigger / Echo
+- Working Frequency:	40 kHz
+## How It Works
+
+The HC-SR04 measures distance using ultrasonic sound waves:
+
+1. The microcontroller sends a 10 µs HIGH pulse to the TRIG pin
+
+2. The sensor emits an ultrasonic burst (40 kHz)
+
+3. The sound wave reflects off an object
+
+4. The ECHO pin stays HIGH for the duration of the round trip
+
+5. The pulse width is measured to calculate distance
+
+## GPIO Configuration
+
+- TRIG pin → Output
+
+- ECHO pin → Input
+## Distance Calculation
+Distance is calculated using the pulse duration:
+<pre>
+  Distance (cm) = (Echo time in µs × Speed of Sound) / 2
+  Distance (cm) ≈ Echo time / 58
+</pre>
+The division by 2 accounts for the sound traveling to the object and back.
