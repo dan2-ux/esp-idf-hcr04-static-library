@@ -4,7 +4,8 @@ This repository demonstrates how to interface the HC-SR04 ultrasonic distance se
 
 The HC-SR04 is commonly used in obstacle detection, robotics, and distance measurement projects.
 
-<img width="600" height="600" alt="image" src="https://github.com/user-attachments/assets/REPLACE_WITH_IMAGE" />
+<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/afafd816-f0e5-442a-909f-d349b9198721" />
+
 ## Sensor Overview
 - Measurement Range:	2 cm – 400 cm
 - Accuracy:	±3 mm
