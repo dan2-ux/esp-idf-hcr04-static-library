@@ -6,6 +6,9 @@ The HC-SR04 is commonly used in obstacle detection, robotics, and distance measu
 
 <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/afafd816-f0e5-442a-909f-d349b9198721" />
 
+## What problem does this solve?
+Ready to use components only require developers to define pin.
+
 ## Sensor Overview
 - Measurement Range:	2 cm – 400 cm
 - Accuracy:	±3 mm
