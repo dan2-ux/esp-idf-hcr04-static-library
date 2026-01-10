@@ -1,14 +1,12 @@
-#include "setup.h"
+#include "hcr04.h"
 #include "esp_timer.h"
 #include "esp_rom_sys.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-TimerHandle_t timer1 = NULL;
-QueueHandle_t q1 = NULL;
-
 namespace distance
 {
+    handle_t myHandle_t;
     void warningTask(TimerHandle_t xTimer)
     {
         gpioINFO *gpio = (gpioINFO *)pvTimerGetTimerID(xTimer);
@@ -28,8 +26,8 @@ namespace distance
         gpio_set_direction(gpio->echo, GPIO_MODE_INPUT);
         gpio_set_direction(gpio->trig, GPIO_MODE_OUTPUT);
         gpio_set_direction(gpio->warning, GPIO_MODE_OUTPUT);
-        q1 = xQueueCreate(5, sizeof(float));
-        timer1 = xTimerCreate("timer for warning", pdMS_TO_TICKS(500), pdTRUE, (void *)gpio, warningTask);
+        distance::myHandle_t.q1 = xQueueCreate(5, sizeof(float));
+        distance::myHandle_t.timer1 = xTimerCreate("timer for warning", pdMS_TO_TICKS(500), pdTRUE, (void *)gpio, warningTask);
     }
 
     bool measure(gpioINFO *gpio)
@@ -68,7 +66,7 @@ namespace distance
         int64_t echoEnd = esp_timer_get_time();
         float res = ((echoEnd - echoStart) * 0.0343) / 2;
 
-        if (xQueueSend(q1, &res, 0))
+        if (xQueueSend(distance::myHandle_t.q1, &res, 0))
         {
             return true;
         }
@@ -82,16 +80,16 @@ namespace distance
     {
         float res = 0;
         char *text = (char *)malloc(30);
-        if (xQueueReceive(q1, &res, 0) == pdTRUE)
+        if (xQueueReceive(distance::myHandle_t.q1, &res, 0) == pdTRUE)
         {
             if (res < 10)
             {
                 gpio_set_level(gpio->warning, 1);
-                if (xTimerIsTimerActive(timer1) == pdTRUE)
+                if (xTimerIsTimerActive(distance::myHandle_t.timer1) == pdTRUE)
                 {
-                    xTimerReset(timer1, 0);
+                    xTimerReset(distance::myHandle_t.timer1, 0);
                 }
-                xTimerStart(timer1, 0);
+                xTimerStart(distance::myHandle_t.timer1, 0);
             }
             snprintf(text, 30, "Distance: %.2f cm", res);
             ESP_LOGI(TAG, "%s", text);
