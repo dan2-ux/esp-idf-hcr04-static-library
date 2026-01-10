@@ -6,8 +6,6 @@
 #include "freertos/task.h"
 
 static const char *TAG = "DISTANCE";
-extern TimerHandle_t timer1;
-extern QueueHandle_t q1;
 
 namespace distance
 {
@@ -16,6 +14,12 @@ namespace distance
         gpio_num_t trig;
         gpio_num_t echo;
         gpio_num_t warning;
+    };
+
+    struct handle_t
+    {
+        TimerHandle_t timer1;
+        QueueHandle_t q1;
     };
 
     void gpioINIT(gpioINFO *gpio);
